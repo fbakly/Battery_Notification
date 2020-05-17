@@ -11,7 +11,7 @@ import (
 )
 
 func playBeep() {
-	f, err := os.Open("resources/beep.mp3")
+	f, err := os.Open("resources/.scripts/beep.mp3")
 	if err == nil {
 		streamer, format, err := mp3.Decode(f)
 		if err == nil {
