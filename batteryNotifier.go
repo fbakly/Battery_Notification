@@ -1,17 +1,18 @@
 package main
 
 import (
+	"os"
+	"time"
+
 	"github.com/distatus/battery"
-	"github.com/mqu/go-notify"
 	"github.com/faiface/beep"
 	"github.com/faiface/beep/mp3"
 	"github.com/faiface/beep/speaker"
-	"time"
-	"os"
+	"github.com/mqu/go-notify"
 )
 
 func playBeep() {
-	f, err := os.Open("resources/.scripts/beep.mp3")
+	f, err := os.Open("resources/beep.mp3")
 	if err == nil {
 		streamer, format, err := mp3.Decode(f)
 		if err == nil {
@@ -22,7 +23,7 @@ func playBeep() {
 			speaker.Play(beep.Seq(streamer, beep.Callback(func() {
 				done <- true
 			})))
-			<- done
+			<-done
 			close(done)
 			f.Close()
 		}
@@ -41,7 +42,7 @@ func playInbox() {
 			speaker.Play(beep.Seq(streamer, beep.Callback(func() {
 				done <- true
 			})))
-			<- done
+			<-done
 			close(done)
 			f.Close()
 		}
@@ -49,7 +50,7 @@ func playInbox() {
 }
 
 func notifyFullBattery(notified *bool) {
-	if (!*(notified)) {
+	if !*(notified) {
 		*notified = true
 		fullBattery := notify.NotificationNew("Battery Full", "", "dialog-information")
 		notify.NotificationSetUrgency(fullBattery, notify.NOTIFY_URGENCY_LOW)
@@ -61,7 +62,7 @@ func notifyFullBattery(notified *bool) {
 }
 
 func notifyLowBattery(notified *bool) {
-	if (!(*notified)) {
+	if !(*notified) {
 		*notified = true
 		batteryLow := notify.NotificationNew("Battery Low", "Charge Now!!!", "dialog-information")
 		notify.NotificationSetUrgency(batteryLow, notify.NOTIFY_URGENCY_CRITICAL)
@@ -73,7 +74,7 @@ func notifyLowBattery(notified *bool) {
 }
 
 func notifyCharge(isCharging bool, chargeNotified *bool) {
-	if (isCharging && !(*chargeNotified)) {
+	if isCharging && !(*chargeNotified) {
 		*chargeNotified = true
 		charging := notify.NotificationNew("Charging battery", "", "dialog-information")
 		notify.NotificationSetUrgency(charging, notify.NOTIFY_URGENCY_NORMAL)
@@ -81,7 +82,7 @@ func notifyCharge(isCharging bool, chargeNotified *bool) {
 		playInbox()
 		time.Sleep(2 * time.Second)
 		notify.NotificationClose(charging)
-	} else if (!isCharging && *chargeNotified) {
+	} else if !isCharging && *chargeNotified {
 		*chargeNotified = false
 		discharging := notify.NotificationNew("Battery Discharging", "", "dialog-information")
 		notify.NotificationSetUrgency(discharging, notify.NOTIFY_URGENCY_NORMAL)
@@ -97,7 +98,7 @@ func getBatteryState(batteries []*battery.Battery, isCharging *bool) {
 
 	*isCharging = false
 	for index := 0; index < length; index++ {
-		if (batteries[index].State.String() == "Charging") {
+		if batteries[index].State.String() == "Charging" {
 			*isCharging = true
 		}
 	}
@@ -108,7 +109,7 @@ func main() {
 	isCharging := false
 	notified := false
 	notify.Init("Battery Percentage Notifier")
-	for  {
+	for {
 		percentage := 0
 		batteries, err := battery.GetAll()
 
@@ -124,14 +125,14 @@ func main() {
 
 		percentage /= 2
 
-		if (percentage == 100) {
+		if percentage == 100 {
 			notifyFullBattery(&notified)
-		} else if (percentage <= 20) {
+		} else if percentage <= 20 {
 			notifyLowBattery(&notified)
 		} else {
 			notified = false
 		}
-	
+
 		notifyCharge(isCharging, &chargeNotified)
 	}
 }
