@@ -12,7 +12,7 @@ import (
 )
 
 func playBeep() {
-	f, err := os.Open("resources/beep.mp3")
+	f, err := os.Open("/home/fbakly/.scripts/resources/beep.mp3")
 	if err == nil {
 		streamer, format, err := mp3.Decode(f)
 		if err == nil {
@@ -31,7 +31,7 @@ func playBeep() {
 }
 
 func playInbox() {
-	f, err := os.Open("resources/filling-your-inbox.mp3")
+	f, err := os.Open("/home/fbakly/.scripts/resources/filling-your-inbox.mp3")
 	if err == nil {
 		streamer, format, err := mp3.Decode(f)
 		if err == nil {
@@ -123,7 +123,7 @@ func main() {
 			percentage += int((battery.Current / battery.Full) * 100)
 		}
 
-		percentage /= 2
+		percentage /= len(batteries)
 
 		if percentage == 100 {
 			notifyFullBattery(&notified)
