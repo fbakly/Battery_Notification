@@ -13,7 +13,9 @@ import (
 
 func playBeep() {
 	f, err := os.Open("resources/beep.mp3")
+
 	if err == nil {
+		defer f.Close()
 		streamer, format, err := mp3.Decode(f)
 		if err == nil {
 			defer streamer.Close()
@@ -24,15 +26,15 @@ func playBeep() {
 				done <- true
 			})))
 			<-done
-			close(done)
-			f.Close()
 		}
 	}
 }
 
 func playInbox() {
 	f, err := os.Open("resources/filling-your-inbox.mp3")
+
 	if err == nil {
+		defer f.Close()
 		streamer, format, err := mp3.Decode(f)
 		if err == nil {
 			defer streamer.Close()
@@ -43,8 +45,6 @@ func playInbox() {
 				done <- true
 			})))
 			<-done
-			close(done)
-			f.Close()
 		}
 	}
 }
@@ -126,13 +126,14 @@ func main() {
 		percentage /= 2
 
 		if percentage == 100 {
-			notifyFullBattery(&notified)
+			go notifyFullBattery(&notified)
 		} else if percentage <= 20 {
-			notifyLowBattery(&notified)
+			go notifyLowBattery(&notified)
 		} else {
 			notified = false
 		}
 
-		notifyCharge(isCharging, &chargeNotified)
+		go notifyCharge(isCharging, &chargeNotified)
+		time.Sleep(2 * time.Second)
 	}
 }
