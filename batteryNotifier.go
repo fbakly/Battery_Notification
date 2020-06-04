@@ -123,7 +123,7 @@ func main() {
 			percentage += int((battery.Current / battery.Full) * 100)
 		}
 
-		percentage /= 2
+		percentage /= len(batteries)
 
 		if percentage == 100 {
 			go notifyFullBattery(&notified)
