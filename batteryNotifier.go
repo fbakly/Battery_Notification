@@ -49,7 +49,7 @@ func notifyBatteryLevel(title string, content string, icon string, urgency notif
 		*notified = true
 		go sendNotification(title, content, icon, urgency, finished)
 		playAudio(beepPath)
-		<- finished
+		<-finished
 	}
 }
 
@@ -59,13 +59,13 @@ func notifyCharge(isCharging bool, chargeNotified *bool) {
 		*chargeNotified = true
 		go sendNotification("Charging Battery", "", "dialog-information", notify.NOTIFY_URGENCY_NORMAL, finished)
 		playAudio(inboxPath)
-		<- finished
+		<-finished
 	} else if !isCharging && *chargeNotified {
 		finished := make(chan bool)
 		*chargeNotified = false
 		go sendNotification("Battery Discharging", "", "dialog-information", notify.NOTIFY_URGENCY_NORMAL, finished)
 		playAudio(inboxPath)
-		<- finished
+		<-finished
 	}
 }
 
